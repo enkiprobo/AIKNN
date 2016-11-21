@@ -1,16 +1,17 @@
 # PROGRAM PEMBUATAN CLASSIFIERS ID3 
 import numpy as np
+import operator
 
 # pembuatan konstanta
-nTetangga = 7
+nTetangga = 83
 
 # pembuatan fungsi dan prosedur
-def loadData(split=0.9): # mengambil data dari file
+def loadData(split=0.6): # mengambil data dari file
 	with open("Train.txt") as f:
 		data_set = np.loadtxt(f,skiprows=1,usecols=(x for x in range(1,12)))
 
-		data_train = data_set[:len(data_set)*split]
-		data_test =  data_set[len(data_set)*split:]
+		data_train = data_set[:int(len(data_set)*split)]
+		data_test =  data_set[int(len(data_set)*split):]
 
 		# train_feat = train_set[:,0:10]
 		# train_class = train_set[:,10]
@@ -26,15 +27,17 @@ def euclideandistance(p1, p2): # mencari eucledian distance antara 2 buah data p
 
 def kumpulanTetangga(datatrain, onedatatest, k):
 	distances = []
-	for x in range(len(datatrain)):
+	for x in xrange(len(datatrain)):
 		dist = euclideandistance(onedatatest, datatrain[x])
-		distances.append(dist)
-	copy = datatrain[:]
+		distances.append((datatrain[x], dist))
+		distances.sort(key=operator.itemgetter(1))
+	# copy = datatrain[:]
 	tetangga=[]
 	for x in xrange(k):
-		index = distances.index(min(distances))
-		distances.pop(distances.index(min(distances)))
-		tetangga.append(copy.tolist().pop(index))
+		# index = distances.index(min(distances))
+		# distances.pop(distances.index(min(distances)))
+		# tetangga.append(copy.tolist().pop(index))
+		tetangga.append(distances[x][0])
 
 	return tetangga
 	# akhir fungsi kumpulanTetangga
@@ -52,6 +55,7 @@ def tentukanclass(tetangga):
 def knn(datatrain, datates, k):
 	tetangga = kumpulanTetangga(datatrain, datates, k)
 	return tentukanclass(tetangga)
+	# akhir 
 
 
 # data1 = [2, 2, 2]
@@ -72,9 +76,9 @@ akurasi = 0
 
 for x in range(len(data_test)):
 	hasil = knn(data_train, data_test[x], k)
-	print  hasil
+	print  "hasil :",hasil,", target nyata :",data_test[x][-1]
 	if  hasil == data_test[x][-1]:
 		akurasi +=1
-	print "akurasi ke", x+1,":",akurasi
+	print "jumlah benar :",akurasi,"dari",x+1,"data"
 
 print 1.*akurasi/len(data_test)

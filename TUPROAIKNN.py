@@ -1,4 +1,4 @@
-# PROGRAM PEMBUATAN CLASSIFIERS ID3 
+# PROGRAM PEMBUATAN CLASSIFIERS knn
 import numpy as np
 import operator
 

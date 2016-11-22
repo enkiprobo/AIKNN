@@ -1,17 +1,18 @@
-# PROGRAM PEMBUATAN CLASSIFIERS knn
+# PROGRAM PEMBUATAN CLASSIFIERS KNN
 import numpy as np
 import operator
 
 # pembuatan konstanta
-nTetangga = 83
+nTetangga = 90
 
 # pembuatan fungsi dan prosedur
-def loadData(split=0.6): # mengambil data dari file
+def loadData(split=0.9): # mengambil data dari file
 	with open("Train.txt") as f:
 		data_set = np.loadtxt(f,skiprows=1,usecols=(x for x in range(1,12)))
 
 		data_train = data_set[:int(len(data_set)*split)]
 		data_test =  data_set[int(len(data_set)*split):]
+
 
 		# train_feat = train_set[:,0:10]
 		# train_class = train_set[:,10]
@@ -29,16 +30,15 @@ def kumpulanTetangga(datatrain, onedatatest, k):
 	distances = []
 	for x in xrange(len(datatrain)):
 		dist = euclideandistance(onedatatest, datatrain[x])
-		distances.append((datatrain[x], dist))
-		distances.sort(key=operator.itemgetter(1))
-	# copy = datatrain[:]
-	tetangga=[]
-	for x in xrange(k):
-		# index = distances.index(min(distances))
-		# distances.pop(distances.index(min(distances)))
-		# tetangga.append(copy.tolist().pop(index))
-		tetangga.append(distances[x][0])
-
+		distances.append([datatrain[x],dist])
+	#copy = datatrain[:]
+	#for x in xrange(k):
+	#	index = distances.index(min(distances))
+	#	distances.pop(distances.index(min(distances)))
+	#	tetangga.append(copy.tolist().pop(index))
+	distances.sort(key=operator.itemgetter(1))
+	#neighbors = []
+	tetangga = [distances[x][0] for x in xrange(k)]
 	return tetangga
 	# akhir fungsi kumpulanTetangga
 
@@ -49,13 +49,13 @@ def tentukanclass(tetangga):
 			jumlahClass[1] += 1
 		else:
 			jumlahClass[0] += 1
+
 	return jumlahClass.index(max(jumlahClass))
 	# akhir tentukanclass
 
 def knn(datatrain, datates, k):
 	tetangga = kumpulanTetangga(datatrain, datates, k)
 	return tentukanclass(tetangga)
-	# akhir 
 
 
 # data1 = [2, 2, 2]
@@ -74,11 +74,11 @@ k = nTetangga
 # memulai k-nearest neighbor
 akurasi = 0
 
-for x in range(len(data_test)):
+for x in xrange(len(data_test)):
 	hasil = knn(data_train, data_test[x], k)
 	print  "hasil :",hasil,", target nyata :",data_test[x][-1]
 	if  hasil == data_test[x][-1]:
 		akurasi +=1
-	print "jumlah benar :",akurasi,"dari",x+1,"data"
+	print "jumlah benar :",akurasi,"dari",x+1,"data,", "akurasi sementara:", (1.*akurasi/(x+1))*100,"%"
 
-print 1.*akurasi/len(data_test)
+print "akurasi akhir:", (1.*akurasi/len(data_test))*100,"%"
